@@ -2,7 +2,7 @@ package com.plcoding.cryptotracker.crypto.ui.models
 
 import androidx.annotation.DrawableRes
 import com.plcoding.cryptotracker.crypto.domain.Coin
-import com.plcoding.cryptotracker.util.getDrawableIdForCoin
+import com.plcoding.cryptotracker.core.ui.util.getDrawableIdForCoin
 import java.text.NumberFormat
 import java.util.Locale
 
