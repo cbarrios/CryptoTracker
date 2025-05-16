@@ -6,12 +6,14 @@ import com.plcoding.cryptotracker.core.domain.util.onError
 import com.plcoding.cryptotracker.core.domain.util.onSuccess
 import com.plcoding.cryptotracker.crypto.domain.CoinDataSource
 import com.plcoding.cryptotracker.crypto.ui.models.toCoinUi
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class CoinListViewModel(
     private val coinDataSource: CoinDataSource
@@ -40,12 +42,13 @@ class CoinListViewModel(
             coinDataSource
                 .getCoins()
                 .onSuccess { coins ->
+                    val uiCoins = withContext(Dispatchers.Default) {
+                        coins.map { it.toCoinUi() }
+                    }
                     _uiState.update {
                         it.copy(
                             isLoading = false,
-                            coins = coins.map { coin ->
-                                coin.toCoinUi()
-                            }
+                            coins = uiCoins
                         )
                     }
                 }

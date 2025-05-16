@@ -11,6 +11,8 @@ import com.plcoding.cryptotracker.crypto.domain.Coin
 import com.plcoding.cryptotracker.crypto.domain.CoinDataSource
 import io.ktor.client.HttpClient
 import io.ktor.client.request.get
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 class RemoteCoinDataSource(
     private val httpClient: HttpClient
@@ -22,7 +24,9 @@ class RemoteCoinDataSource(
                 urlString = constructUrl("/assets")
             )
         }.map { response ->
-            response.data.map { it.toCoin() }
+            withContext(Dispatchers.Default) {
+                response.data.map { it.toCoin() }
+            }
         }
     }
 }
