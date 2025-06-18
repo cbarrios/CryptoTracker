@@ -21,7 +21,7 @@ class RemoteCoinDataSource(
     override suspend fun getCoins(): Result<List<Coin>, NetworkError> {
         return safeCall<CoinsResponseDto> {
             httpClient.get(
-                urlString = constructUrl("/assets")
+                urlString = constructUrl("/assets?apiKey=a1b20e43cac386b11f5fcbff28e7f0651b31c48f7267046367f7f4d9d6fe2e1e")
             )
         }.map { response ->
             withContext(Dispatchers.Default) {
