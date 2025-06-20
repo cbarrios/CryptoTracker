@@ -75,6 +75,7 @@ private fun PriceChangePreview() {
         PriceChange(
             change = DisplayableChange(
                 number = DisplayableNumber(value = 2.43, formatted = "2.43"),
+                changeAmount = DisplayableNumber(value = 24.3, formatted = "24.3"),
                 isNegative = false
             )
         )

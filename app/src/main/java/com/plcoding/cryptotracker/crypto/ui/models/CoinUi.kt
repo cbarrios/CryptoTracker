@@ -24,7 +24,8 @@ data class DisplayableNumber(
 
 data class DisplayableChange(
     val number: DisplayableNumber,
-    val isNegative: Boolean
+    val changeAmount: DisplayableNumber,
+    val isNegative: Boolean,
 )
 
 fun Coin.toCoinUi(): CoinUi {
@@ -37,6 +38,7 @@ fun Coin.toCoinUi(): CoinUi {
         priceUsd = priceUsd.toDisplayableNumber(),
         changePercent24Hr = DisplayableChange(
             number = changePercent24Hr.toDisplayableNumber(),
+            changeAmount = (priceUsd * (changePercent24Hr / 100)).toDisplayableNumber(),
             isNegative = changePercent24Hr < 0.0
         ),
         iconRes = getDrawableIdForCoin(symbol)

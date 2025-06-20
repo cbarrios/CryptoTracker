@@ -5,6 +5,7 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
@@ -14,6 +15,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.plcoding.cryptotracker.core.ui.util.ObserveAsEvents
 import com.plcoding.cryptotracker.core.ui.util.toString
+import com.plcoding.cryptotracker.crypto.ui.coin_detail.CoinDetailScreen
 import com.plcoding.cryptotracker.crypto.ui.coin_list.CoinListEvent
 import com.plcoding.cryptotracker.crypto.ui.coin_list.CoinListScreen
 import com.plcoding.cryptotracker.crypto.ui.coin_list.CoinListViewModel
@@ -25,7 +27,10 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            CryptoTrackerTheme {
+            val darkTheme = isSystemInDarkTheme()
+            CryptoTrackerTheme(
+                darkTheme = darkTheme
+            ) {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     val viewModel = koinViewModel<CoinListViewModel>()
                     val state by viewModel.uiState.collectAsStateWithLifecycle()
@@ -41,10 +46,23 @@ class MainActivity : ComponentActivity() {
                             }
                         }
                     }
-                    CoinListScreen(
-                        uiState = state,
-                        modifier = Modifier.padding(innerPadding)
-                    )
+                    when {
+                        state.selectedCoin != null -> {
+                            CoinDetailScreen(
+                                state = state,
+                                darkTheme = darkTheme,
+                                modifier = Modifier.padding(innerPadding)
+                            )
+                        }
+
+                        else -> {
+                            CoinListScreen(
+                                uiState = state,
+                                modifier = Modifier.padding(innerPadding),
+                                onAction = viewModel::onAction
+                            )
+                        }
+                    }
                 }
             }
         }
