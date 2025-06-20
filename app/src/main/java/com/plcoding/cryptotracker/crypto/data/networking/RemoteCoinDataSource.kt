@@ -1,5 +1,6 @@
 package com.plcoding.cryptotracker.crypto.data.networking
 
+import com.plcoding.cryptotracker.BuildConfig
 import com.plcoding.cryptotracker.core.data.networking.constructUrl
 import com.plcoding.cryptotracker.core.data.networking.safeCall
 import com.plcoding.cryptotracker.core.domain.util.NetworkError
@@ -20,14 +21,11 @@ import kotlinx.coroutines.withContext
 import java.time.ZoneId
 import java.time.ZonedDateTime
 
+private const val API_KEY = BuildConfig.API_KEY
+
 class RemoteCoinDataSource(
     private val httpClient: HttpClient
 ) : CoinDataSource {
-
-    private companion object {
-        private const val API_KEY =
-            "a1b20e43cac386b11f5fcbff28e7f0651b31c48f7267046367f7f4d9d6fe2e1e"
-    }
 
     override suspend fun getCoins(): Result<List<Coin>, NetworkError> {
         return safeCall<CoinsResponseDto> {
