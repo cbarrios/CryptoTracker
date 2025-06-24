@@ -5,6 +5,8 @@ import androidx.lifecycle.viewModelScope
 import com.plcoding.cryptotracker.core.domain.util.onError
 import com.plcoding.cryptotracker.core.domain.util.onSuccess
 import com.plcoding.cryptotracker.crypto.domain.CoinDataSource
+import com.plcoding.cryptotracker.crypto.domain.CoinPrice
+import com.plcoding.cryptotracker.crypto.ui.coin_detail.DataPoint
 import com.plcoding.cryptotracker.crypto.ui.models.CoinUi
 import com.plcoding.cryptotracker.crypto.ui.models.toCoinUi
 import kotlinx.coroutines.Dispatchers
@@ -18,6 +20,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
 
 class CoinListViewModel(
     private val coinDataSource: CoinDataSource
@@ -54,12 +57,37 @@ class CoinListViewModel(
                     start = ZonedDateTime.now().minusDays(5),
                     end = ZonedDateTime.now()
                 )
-                .onSuccess { history ->
-                    println(history)
+                .onSuccess { prices ->
+                    loadHistory(prices)
                 }
                 .onError { error ->
                     _events.send(CoinListEvent.Error(error))
                 }
+        }
+    }
+
+    private fun loadHistory(prices: List<CoinPrice>) {
+        viewModelScope.launch {
+            val dataPoints = withContext(Dispatchers.Default) {
+                prices
+                    .sortedBy { it.dateTime }
+                    .map {
+                        DataPoint(
+                            x = it.dateTime.hour.toFloat(),
+                            y = it.priceUsd.toFloat(),
+                            xLabel = DateTimeFormatter
+                                .ofPattern("ha\nM/d")
+                                .format(it.dateTime)
+                        )
+                    }
+            }
+            _uiState.update {
+                it.copy(
+                    selectedCoin = it.selectedCoin?.copy(
+                        coinPriceHistory = dataPoints
+                    )
+                )
+            }
         }
     }
 
